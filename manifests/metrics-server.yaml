@@ -38,7 +38,7 @@ rules:
   resources:
   - pods
   - nodes
-  - nodes/stats
+  - nodes/metrics
   - namespaces
   - configmaps
   verbs:
@@ -134,6 +134,7 @@ spec:
         - --kubelet-insecure-tls
         - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
         - --kubelet-use-node-status-port
+        - --metric-resolution=15s
         image: k8s.gcr.io/metrics-server/metrics-server:v0.6.1
         imagePullPolicy: IfNotPresent
         livenessProbe:
@@ -154,8 +155,14 @@ spec:
             path: /readyz
             port: https
             scheme: HTTPS
+          initialDelaySeconds: 20
           periodSeconds: 10
+        resources:
+          requests:
+            cpu: 100m
+            memory: 200Mi
         securityContext:
+          allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
           runAsNonRoot: true
           runAsUser: 1000
