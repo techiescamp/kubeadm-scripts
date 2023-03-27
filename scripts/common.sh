@@ -20,7 +20,7 @@ sudo apt-get update -y
 
 OS="xUbuntu_20.04"
 
-VERSION="1.23"
+VERSION="$(echo ${KUBERNETES_VERSION} | grep -oE '[0-9]+\.[0-9]+')"
 
 # Create the .conf file to load the modules at bootup
 cat <<EOF | sudo tee /etc/modules-load.d/crio.conf
