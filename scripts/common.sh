@@ -18,7 +18,7 @@ sudo apt-get update -y
 
 # Install CRI-O Runtime
 
-OS="xUbuntu_20.04"
+OS="xUbuntu_22.04"
 
 VERSION="$(echo ${KUBERNETES_VERSION} | grep -oE '[0-9]+\.[0-9]+')"
 
