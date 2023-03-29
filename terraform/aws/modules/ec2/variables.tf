@@ -3,22 +3,22 @@ provider "aws" {
 }
 
 variable "instance_name" {
-  type = string
+  type    = string
   default = "live-test-instance"
 }
 
 variable "ami_id" {
-  type = string
+  type    = string
   default = "ami-0735c191cf914754d"
 }
 
 variable "instance_type" {
-  type = string
+  type    = string
   default = "t2.small"
 }
 
 variable "key_name" {
-  type = string
+  type    = string
   default = "techiescamp"
 }
 

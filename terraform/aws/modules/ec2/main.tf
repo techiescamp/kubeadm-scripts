@@ -27,10 +27,15 @@ resource "aws_security_group" "instance-sg" {
 resource "aws_instance" "example" {
   count = var.instance_count
 
-  ami           = var.ami_id
-  instance_type = var.instance_type
-  key_name      = var.key_name
+  ami                    = var.ami_id
+  instance_type          = var.instance_type
+  key_name               = var.key_name
   vpc_security_group_ids = [aws_security_group.instance-sg.id]
+
+  user_data = <<-EOF
+    #cloud-config
+    hostname: "${var.instance_name}-${count.index + 1}"
+  EOF
 
   tags = {
     Name = "${var.instance_name}-${count.index + 1}"
