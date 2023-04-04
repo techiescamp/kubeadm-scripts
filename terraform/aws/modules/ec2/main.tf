@@ -34,11 +34,11 @@ resource "aws_instance" "example" {
 
   user_data = <<-EOF
     #cloud-config
-    hostname: "${var.instance_name}-${count.index + 1}"
+    hostname: ${count.index == 0 ? "k8s-master-1" : "k8s-worker-${count.index+1}"}
   EOF
 
-  tags = {
-    Name = "${var.instance_name}-${count.index + 1}"
+tags = {
+    Name = count.index == 0 ? "k8s-master-1" : "k8s-worker-${count.index+1}"
   }
 
   subnet_id = element(var.subnet_ids, count.index % length(var.subnet_ids))
