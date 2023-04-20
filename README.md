@@ -1,6 +1,6 @@
 # Kubeadm Cluster Setup Scripts
 
->If you are preparing for CKA, CKAD, CKS, or KCNA exam, **save 30%** today using code **APRIL23** at https://kube.promo/devops. It is a limited-time offer. Or Check out [Linux Foundation coupon](https://scriptcrunch.com/linux-foundation-coupon/) page for the latest voucher codes.
+>If you are preparing for CKA, CKAD, CKS, or KCNA exam, **save 20%** today using code **DCUBE20** at https://kube.promo/devops. It is a limited-time offer. Or Check out [Linux Foundation coupon](https://scriptcrunch.com/linux-foundation-coupon/) page for the latest voucher codes.
 >
 
 ## Kubeadm Setup Documentation
