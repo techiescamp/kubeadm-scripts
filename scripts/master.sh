@@ -17,8 +17,9 @@ sudo kubeadm config images pull
 # Initialize kubeadm based on PUBLIC_IP_ACCESS
 
 if [[ "$PUBLIC_IP_ACCESS" == "false" ]]; then
-    
-    MASTER_PRIVATE_IP=$(ip addr show eth0 | awk '/inet / {print $2}' | cut -d/ -f1)
+
+    IFACE=$(ip route show to match default | perl -nle 'if ( /dev\s+(\S+)/ ) {print $1}')
+    MASTER_PRIVATE_IP=$(ip addr show $IFACE | awk '/inet / {print $2}' | cut -d/ -f1)
     sudo kubeadm init --apiserver-advertise-address="$MASTER_PRIVATE_IP" --apiserver-cert-extra-sans="$MASTER_PRIVATE_IP" --pod-network-cidr="$POD_CIDR" --node-name "$NODENAME" --ignore-preflight-errors Swap
 
 elif [[ "$PUBLIC_IP_ACCESS" == "true" ]]; then
