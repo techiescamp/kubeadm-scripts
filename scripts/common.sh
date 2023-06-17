@@ -6,7 +6,7 @@ set -euxo pipefail
 
 # Variable Declaration
 
-KUBERNETES_VERSION="1.23.6-00"
+KUBERNETES_VERSION="1.26.3-00"
 
 # disable swap
 sudo swapoff -a
@@ -18,9 +18,9 @@ sudo apt-get update -y
 
 # Install CRI-O Runtime
 
-OS="xUbuntu_20.04"
+OS="xUbuntu_22.04"
 
-VERSION="1.23"
+VERSION="1.26"
 
 # Create the .conf file to load the modules at bootup
 cat <<EOF | sudo tee /etc/modules-load.d/crio.conf
@@ -60,9 +60,9 @@ echo "CRI runtime installed susccessfully"
 
 # Install kubelet, kubectl and Kubeadm
 
-sudo apt-get update
+sudo apt-get update -y
 sudo apt-get install -y apt-transport-https ca-certificates curl
-sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://dl.k8s.io/apt/doc/apt-key.gpg
 
 echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 sudo apt-get update -y
