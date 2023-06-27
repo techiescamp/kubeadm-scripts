@@ -133,7 +133,7 @@ spec:
         - --cert-dir=/tmp
         - --secure-port=4443
         - --kubelet-insecure-tls=true
-        - --kubelet-preferred-address-types=18.236.76.47,InternalIP,ExternalIP,Hostname
+        - --kubelet-preferred-address-types=ExternalIP
         - --kubelet-use-node-status-port
         - --metric-resolution=15s
         image: registry.k8s.io/metrics-server/metrics-server:v0.6.3
