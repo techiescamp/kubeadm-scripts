@@ -7,5 +7,5 @@ Here is the supporting documentation and video demo.
 
 ## 🚀 For Kubernetes Certification Aspirants
 
-If you are preparing for CKA, CKAD, CKS, or KCNA exam, **save 40%** today using code **PRIME23** at https://kube.promo/devops. It is a limited-time offer. Or Check out [Linux Foundation coupon](https://scriptcrunch.com/linux-foundation-coupon/) page for the latest voucher codes.
+If you are preparing for CKA, CKAD, CKS, or KCNA exam, **save $80** today using code **SCRIPT20** at https://kube.promo/devops. It is a limited-time offer. Or Check out [Linux Foundation coupon](https://scriptcrunch.com/linux-foundation-coupon/) page for the latest voucher codes.
 
