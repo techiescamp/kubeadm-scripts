@@ -6,7 +6,7 @@ set -euxo pipefail
 
 # Variable Declaration
 
-KUBERNETES_VERSION="1.26.3-00"
+KUBERNETES_VERSION="1.28.1-00"
 
 # disable swap
 sudo swapoff -a
@@ -20,7 +20,7 @@ sudo apt-get update -y
 
 OS="xUbuntu_22.04"
 
-VERSION="1.26"
+VERSION="1.28"
 
 # Create the .conf file to load the modules at bootup
 cat <<EOF | sudo tee /etc/modules-load.d/crio.conf
