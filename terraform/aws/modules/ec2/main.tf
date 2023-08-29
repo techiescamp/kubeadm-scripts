@@ -43,3 +43,13 @@ tags = {
 
   subnet_id = element(var.subnet_ids, count.index % length(var.subnet_ids))
 }
+
+resource "aws_eip" "control_plane_eip" {
+  count = var.instance_count > 0 ? 1 : 0  
+
+  instance = aws_instance.example[0].id  
+
+  tags = {
+    Name = "controlplane-eip"
+  }
+}
