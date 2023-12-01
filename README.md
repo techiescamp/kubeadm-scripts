@@ -7,7 +7,7 @@ Here is the supporting documentation and video demo.
 
 ## 🚀 For Kubernetes Certification Aspirants
 
-- 🚀  CKA, CKAD, CKS, or KCNA exam aspirants can **save 65%** today using code **CYBER23CC** at https://kube.promo/cyber. It is a limited-time offer from the Linux Foundation.
+- 🚀  CKA, CKAD, CKS, or KCNA exam aspirants can **save 65%** today using code **CYBER23COM** at https://kube.promo/cyber. It is a limited-time offer from the Linux Foundation.
 - For the best savings, opt for the CKA + CKS bundle. Use code **CYBER23CC** at https://kube.promo/bundle
 
 🎁 You will also get a free gift with every purchase.
