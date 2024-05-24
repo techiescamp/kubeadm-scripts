@@ -6,9 +6,19 @@ set -euxo pipefail
 
 # If you need public access to API server using the servers Public IP adress, change PUBLIC_IP_ACCESS to true.
 
-PUBLIC_IP_ACCESS="true"
+if [ -z ${ETH_DEVICE+x} ] ; then
+    ETH_DEVICE=eth0
+fi 
+
+if [ -z ${POD_CIDR+x} ] ; then
+    POD_CIDR="192.168.0.0/16"
+fi 
+
+if [ -z ${PUBLIC_IP_ACCESS+x} ] ; then
+    PUBLIC_IP_ACCESS="true"
+fi 
+
 NODENAME=$(hostname -s)
-POD_CIDR="192.168.0.0/16"
 
 # Pull required images
 
@@ -18,7 +28,7 @@ sudo kubeadm config images pull
 
 if [[ "$PUBLIC_IP_ACCESS" == "false" ]]; then
     
-    MASTER_PRIVATE_IP=$(ip addr show eth0 | awk '/inet / {print $2}' | cut -d/ -f1)
+    MASTER_PRIVATE_IP=$(ip addr show $ETH_DEVICE | awk '/inet / {print $2}' | cut -d/ -f1)
     sudo kubeadm init --apiserver-advertise-address="$MASTER_PRIVATE_IP" --apiserver-cert-extra-sans="$MASTER_PRIVATE_IP" --pod-network-cidr="$POD_CIDR" --node-name "$NODENAME" --ignore-preflight-errors Swap
 
 elif [[ "$PUBLIC_IP_ACCESS" == "true" ]]; then

@@ -4,6 +4,10 @@
 
 set -euxo pipefail
 
+if [ -z ${ETH_DEVICE+x} ] ; then
+    ETH_DEVICE=eth0
+fi
+
 # Kuernetes Variable Declaration
 
 KUBERNETES_VERSION="1.29.0-1.1"
@@ -77,7 +81,7 @@ sudo apt-mark hold kubelet kubeadm kubectl
 
 sudo apt-get install -y jq
 
-local_ip="$(ip --json addr show eth0 | jq -r '.[0].addr_info[] | select(.family == "inet") | .local')"
+local_ip="$(ip --json addr show $ETH_DEVICE | jq -r '.[0].addr_info[] | select(.family == "inet") | .local')"
 cat > /etc/default/kubelet << EOF
 KUBELET_EXTRA_ARGS=--node-ip=$local_ip
 EOF
