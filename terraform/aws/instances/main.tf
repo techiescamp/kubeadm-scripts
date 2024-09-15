@@ -5,7 +5,7 @@ provider "aws" {
 module "ec2_instance" {
   source = "../modules/ec2"
 
-  instance_name  = "k8s-node_hari"
+  instance_name  = "k8s-node_14sept"
   ami_id         = "ami-0735c191cf914754d"
   instance_type  = "t2.medium"
   key_name       = "techiescamp"
