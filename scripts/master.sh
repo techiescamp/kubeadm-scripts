@@ -47,4 +47,5 @@ kubectl wait --for=condition=Ready node/"$NODENAME" --timeout=300s
 
 # Install Calico Network Plugin
 CALICO_VERSION="v3.26.0"
-kubectl apply -f https://docs.projectcalico.org/$CALICO_VERSION/manifests/calico.yaml
+kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+
