@@ -3,7 +3,7 @@ K8S INSTALLATION
 1)launch t2 medium ubuntu 22.04 version instance with 2core cpu 4gb ram  - For master node only - Give name as k8s-Master
 2)launch ubuntu 22.04 version instance with t2 micro only - For worker node- Launch 2 worker nodes - Give name as Worker1 and Worker2
 3)Open All Traffic in Master and worker nodes
-4)login as root user in all the three nodes : sudo -i
+4)login as root user in all the three nodes : sudo -i  (or) sudo su 
 5)Run this command in all the three nodes
 
   1) git clone https://github.com/techiescamp/kubeadm-scripts
