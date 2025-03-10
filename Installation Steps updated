@@ -1,0 +1,99 @@
+K8S INSTALLATION 
+
+1)launch t2 medium ubuntu 22.04 version instance with 2core cpu 4gb ram  - For master node only - Give name as k8s-Master
+2)launch ubuntu 22.04 version instance with t2 micro only - For worker node- Launch 2 worker nodes - Give name as Worker1 and Worker2
+3)Open All Traffic in Master and worker nodes  **(go to security groups allow all traffic and allow alltrafficipv4 in both worker and master nodes)**
+4)login as root user in all the three nodes : sudo -i  (or) sudo su 
+5)Run this command in all the three nodes
+
+  1) git clone https://github.com/techiescamp/kubeadm-scripts
+  2) cd kubeadm-scripts
+  3) cd scripts
+  4) Run the script in all the three nodes --- ./common.sh
+  5) Run the script in only Master node -- ./master.sh 
+         Before running master file, edit the master file as join key script is missing in it. vi to master file, delete all content and paste the below content:
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#!/bin/bash
+#
+# Setup for Control Plane (Master) servers
+
+set -euxo pipefail
+
+# Configuration
+PUBLIC_IP_ACCESS="false"
+NODENAME=$(hostname -s)
+POD_CIDR="192.168.0.0/16"
+
+# Validate PUBLIC_IP_ACCESS
+if [[ "$PUBLIC_IP_ACCESS" != "true" && "$PUBLIC_IP_ACCESS" != "false" ]]; then
+    echo "Error: Invalid value for PUBLIC_IP_ACCESS: $PUBLIC_IP_ACCESS"
+    exit 1
+fi
+
+# Disable swap
+sudo swapoff -a
+sudo sed -i '/swap/d' /etc/fstab
+
+# Pull required images
+sudo kubeadm config images pull
+
+# Initialize kubeadm
+if [[ "$PUBLIC_IP_ACCESS" == "false" ]]; then
+    MASTER_PRIVATE_IP=$(ip route get 8.8.8.8 | awk '{print $7; exit}')
+    sudo kubeadm init --apiserver-advertise-address="$MASTER_PRIVATE_IP" --apiserver-cert-extra-sans="$MASTER_PRIVATE_IP" --pod-network-cidr="$POD_CIDR" --node-name "$NODENAME" --ignore-preflight-errors Swap
+else
+    MASTER_PUBLIC_IP=$(curl -s ifconfig.me)
+    sudo kubeadm init --control-plane-endpoint="$MASTER_PUBLIC_IP" --apiserver-cert-extra-sans="$MASTER_PUBLIC_IP" --pod-network-cidr="$POD_CIDR" --node-name "$NODENAME" --ignore-preflight-errors Swap
+fi
+
+# Capture the join command
+JOIN_COMMAND=$(kubeadm token create --print-join-command)
+echo "$JOIN_COMMAND" > join-command.txt
+echo "Use the following command to join worker nodes to the cluster:"
+cat join-command.txt
+
+# Configure kubeconfig
+mkdir -p "$HOME/.kube"
+sudo cp -i /etc/kubernetes/admin.conf "$HOME/.kube/config"
+sudo chown "$(id -u):$(id -g)" "$HOME/.kube/config"
+
+# Wait for the control plane to be ready
+kubectl wait --for=condition=Ready node/"$NODENAME" --timeout=300s
+
+# Install Calico Network Plugin
+CALICO_VERSION="v3.26.0"
+kubectl apply -f https://docs.projectcalico.org/$CALICO_VERSION/manifests/calico.yaml
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  6) copy the join key into your notepad
+  7) Run this command in master node - kubectl get nodes
+  8) paste the join key in two worker node 
+  9) Run this command in master node - kubectl get nodes  - and nodes should be in ready state
+
+  10) Run this in two of the worker nodes to rename the nodes
+      kubectl label node <node-name>  node-role.kubernetes.io/worker=worker for both worker nodes ( replace ip adrerss name by running kubectl get nodes command into <node-name> for both worker nodes )
+ 
+   Run all these commands in master node  
+
+  11) Run This command to install network plugins 
+         kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+
+				To verify ---  kubectl get pods -n kube-system
+
+
+  12) Run This command to install metrics server 
+    kubectl apply -f https://github.com/kubernetes-sigs/metrics-       			server/releases/latest/download/components.yaml
+
+  13) Run this command to verify metrics are showing 
+			kubectl get pods -n kube-system
+
+         kubectl top nodes
+
+  14) Go into to this directory /kubeadm-scripts/manifests and run 
+         cd .
+         cd /kubeadm-scripts/manifests
+         kubectl apply -f sample-app.yaml  and wait for sometime and run below command
+         kubectl get pods once pods are in run state access the master public ip address with <public-ip:32000>
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  
+
