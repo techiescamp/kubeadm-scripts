@@ -5,9 +5,9 @@
 set -euxo pipefail
 
 # Kubernetes Variable Declaration
-KUBERNETES_VERSION="v1.30"
-CRIO_VERSION="v1.30"
-KUBERNETES_INSTALL_VERSION="1.30.0-1.1"
+KUBERNETES_VERSION="v1.32"
+CRIO_VERSION="v1.32"
+KUBERNETES_INSTALL_VERSION="1.32.0-1.1"
 
 # Disable swap
 sudo swapoff -a
