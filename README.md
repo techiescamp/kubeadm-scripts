@@ -28,7 +28,11 @@ The following are the best bundles to **save upto 55%** with code **SEPT25CT**
 
 If you Looking for an organized way to learn Kubernetes and prepare for the CKA exam? 
 
-Check out our [Complete CKA Certification Course](https://techiescamp.com/p/cka-complete-prep-course-practice-tests). It includes illustrations, hands-on exercises, real-world examples, and dedicated Discord support. Use code **DCUBE30** to get 30% OFF today!
+Check out our [Complete CKA Certification Course](https://courses.devopscube.com/p/cka-complete-prep-course-practice-tests). 
+
+It includes illustrations, hands-on exercises, real-world examples, and dedicated Discord support. 
+
+Use code **DCUBE30** to get 30% OFF today!
 
 ## Kubernetes Learning Roadmap
 
