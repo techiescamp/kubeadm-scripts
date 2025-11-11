@@ -5,9 +5,12 @@
 set -euxo pipefail
 
 # Kubernetes Variable Declaration
-KUBERNETES_VERSION="v1.30"
-CRIO_VERSION="v1.30"
-KUBERNETES_INSTALL_VERSION="1.30.0-1.1"
+KUBERNETES_VERSION="v1.34"
+CONTAINERD_VERSION="1.7.22"
+RUNC_VERSION="1.2.2"
+CNI_PLUGINS_VERSION="1.6.0"
+CRICTL_VERSION="v1.34.0"
+KUBERNETES_INSTALL_VERSION="1.34.0-1.1"
 
 # Disable swap
 sudo swapoff -a
@@ -38,24 +41,78 @@ sudo sysctl --system
 sudo apt-get update -y
 sudo apt-get install -y apt-transport-https ca-certificates curl gpg
 
-# Install CRI-O Runtime
+# Install containerd Runtime
 sudo apt-get update -y
 sudo apt-get install -y software-properties-common curl apt-transport-https ca-certificates
 
-curl -fsSL https://pkgs.k8s.io/addons:/cri-o:/stable:/$CRIO_VERSION/deb/Release.key |
-    gpg --dearmor -o /etc/apt/keyrings/cri-o-apt-keyring.gpg
+# Download and install containerd
+curl -LO https://github.com/containerd/containerd/releases/download/v${CONTAINERD_VERSION}/containerd-${CONTAINERD_VERSION}-linux-amd64.tar.gz
+sudo tar Cxzvf /usr/local containerd-${CONTAINERD_VERSION}-linux-amd64.tar.gz
+rm containerd-${CONTAINERD_VERSION}-linux-amd64.tar.gz
 
-echo "deb [signed-by=/etc/apt/keyrings/cri-o-apt-keyring.gpg] https://pkgs.k8s.io/addons:/cri-o:/stable:/$CRIO_VERSION/deb/ /" |
-    tee /etc/apt/sources.list.d/cri-o.list
+# Download and install runc
+curl -LO https://github.com/opencontainers/runc/releases/download/v${RUNC_VERSION}/runc.amd64
+sudo install -m 755 runc.amd64 /usr/local/sbin/runc
+rm runc.amd64
 
-sudo apt-get update -y
-sudo apt-get install -y cri-o
+# Download and install CNI plugins
+curl -LO https://github.com/containernetworking/plugins/releases/download/v${CNI_PLUGINS_VERSION}/cni-plugins-linux-amd64-v${CNI_PLUGINS_VERSION}.tgz
+sudo mkdir -p /opt/cni/bin
+sudo tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v${CNI_PLUGINS_VERSION}.tgz
+rm cni-plugins-linux-amd64-v${CNI_PLUGINS_VERSION}.tgz
+
+# Configure containerd
+sudo mkdir -p /etc/containerd
+containerd config default | sudo tee /etc/containerd/config.toml
+
+# Enable SystemdCgroup in containerd config
+sudo sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
+
+# Create containerd systemd service
+cat <<EOF | sudo tee /etc/systemd/system/containerd.service
+[Unit]
+Description=containerd container runtime
+Documentation=https://containerd.io
+After=network.target local-fs.target
+
+[Service]
+ExecStartPre=-/sbin/modprobe overlay
+ExecStart=/usr/local/bin/containerd
+Type=notify
+Delegate=yes
+KillMode=process
+Restart=always
+RestartSec=5
+LimitNPROC=infinity
+LimitCORE=infinity
+LimitNOFILE=infinity
+TasksMax=infinity
+OOMScoreAdjust=-999
+
+[Install]
+WantedBy=multi-user.target
+EOF
 
 sudo systemctl daemon-reload
-sudo systemctl enable crio --now
-sudo systemctl start crio.service
+sudo systemctl enable containerd --now
+sudo systemctl start containerd.service
 
-echo "CRI runtime installed successfully"
+echo "Containerd runtime installed successfully"
+
+# Install crictl
+curl -LO https://github.com/kubernetes-sigs/cri-tools/releases/download/${CRICTL_VERSION}/crictl-${CRICTL_VERSION}-linux-amd64.tar.gz
+sudo tar zxvf crictl-${CRICTL_VERSION}-linux-amd64.tar.gz -C /usr/local/bin
+rm -f crictl-${CRICTL_VERSION}-linux-amd64.tar.gz
+
+# Configure crictl to use containerd
+cat <<EOF | sudo tee /etc/crictl.yaml
+runtime-endpoint: unix:///run/containerd/containerd.sock
+image-endpoint: unix:///run/containerd/containerd.sock
+timeout: 10
+debug: false
+EOF
+
+echo "crictl installed and configured successfully"
 
 # Install kubelet, kubectl, and kubeadm
 curl -fsSL https://pkgs.k8s.io/core:/stable:/$KUBERNETES_VERSION/deb/Release.key |
