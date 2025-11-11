@@ -8,7 +8,6 @@ set -euxo pipefail
 KUBERNETES_VERSION="v1.34"
 CONTAINERD_VERSION="1.7.22"
 RUNC_VERSION="1.2.2"
-CNI_PLUGINS_VERSION="1.6.0"
 CRICTL_VERSION="v1.34.0"
 KUBERNETES_INSTALL_VERSION="1.34.0-1.1"
 
@@ -54,12 +53,6 @@ rm containerd-${CONTAINERD_VERSION}-linux-amd64.tar.gz
 curl -LO https://github.com/opencontainers/runc/releases/download/v${RUNC_VERSION}/runc.amd64
 sudo install -m 755 runc.amd64 /usr/local/sbin/runc
 rm runc.amd64
-
-# Download and install CNI plugins
-curl -LO https://github.com/containernetworking/plugins/releases/download/v${CNI_PLUGINS_VERSION}/cni-plugins-linux-amd64-v${CNI_PLUGINS_VERSION}.tgz
-sudo mkdir -p /opt/cni/bin
-sudo tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v${CNI_PLUGINS_VERSION}.tgz
-rm cni-plugins-linux-amd64-v${CNI_PLUGINS_VERSION}.tgz
 
 # Configure containerd
 sudo mkdir -p /etc/containerd
