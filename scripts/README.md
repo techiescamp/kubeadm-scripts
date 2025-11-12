@@ -7,8 +7,8 @@ These scripts automate the setup of a Kubernetes cluster using kubeadm with cont
 ## Components & Versions
 
 - **Kubernetes**: v1.34
-- **Container Runtime**: containerd v1.7.22
-- **runc**: v1.2.2
+- **Container Runtime**: containerd v2.2.0
+- **runc**: v1.3.3
 - **CNI Plugins**: v1.6.0 (optional, commented out - Calico provides its own)
 - **crictl**: v1.34.0
 - **Network Plugin**: Calico
