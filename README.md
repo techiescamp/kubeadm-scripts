@@ -5,7 +5,7 @@ Here is the supporting documentation and video demo.
 1. [Documentation - Kubeadm Cluster Setup Guide](https://devopscube.com/setup-kubernetes-cluster-kubeadm/)
 2. [Kubeadm workflow explanation and demo video](https://youtu.be/xX52dc3u2HU)
 
-## Kubernetes Certification Voucher (UpTo 38% OFF) 🎉
+## Kubernetes Certification Voucher (UpTo 48% OFF) 🎉
 
 As part of our commitment to helping the DevOps community save money on Kubernetes Certifications, we continuously update the latest voucher codes from the Linux Foundation
 
