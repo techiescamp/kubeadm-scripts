@@ -5,9 +5,9 @@
 set -euxo pipefail
 
 # Kubernetes Variable Declaration
-KUBERNETES_VERSION="v1.32"
-CRIO_VERSION="v1.32"
-KUBERNETES_INSTALL_VERSION="1.32.0-1.1"
+KUBERNETES_VERSION="v1.34"
+CRICTL_VERSION="v1.34.0"
+KUBERNETES_INSTALL_VERSION="1.34.0-1.1"
 
 # Disable swap
 sudo swapoff -a
@@ -38,24 +38,65 @@ sudo sysctl --system
 sudo apt-get update -y
 sudo apt-get install -y apt-transport-https ca-certificates curl gpg
 
-# Install CRI-O Runtime
+# Install containerd Runtime
 sudo apt-get update -y
 sudo apt-get install -y software-properties-common curl apt-transport-https ca-certificates
 
-curl -fsSL https://pkgs.k8s.io/addons:/cri-o:/stable:/$CRIO_VERSION/deb/Release.key |
-    gpg --dearmor -o /etc/apt/keyrings/cri-o-apt-keyring.gpg
 
-echo "deb [signed-by=/etc/apt/keyrings/cri-o-apt-keyring.gpg] https://pkgs.k8s.io/addons:/cri-o:/stable:/$CRIO_VERSION/deb/ /" |
-    tee /etc/apt/sources.list.d/cri-o.list
 
-sudo apt-get update -y
-sudo apt-get install -y cri-o
+sudo apt-get update
+sudo apt-get install ca-certificates curl gnupg
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+sudo apt-get install containerd.io
 
 sudo systemctl daemon-reload
-sudo systemctl enable crio --now
-sudo systemctl start crio.service
+sudo systemctl enable containerd --now
+sudo systemctl start containerd.service
 
-echo "CRI runtime installed successfully"
+echo "Containerd runtime installed successfully"
+
+# Generate the default containerd configuration
+sudo containerd config default | sudo tee /etc/containerd/config.toml
+
+# Enable SystemdCgroup clear
+
+sudo sed -i 's/SystemdCgroup = false/SystemdCgroup = true/g' /etc/containerd/config.toml
+
+# Restart containerd to apply changes
+sudo systemctl restart containerd
+
+# Detect architecture for downloads (amd64 vs arm64)
+ARCH="$(dpkg --print-architecture)"
+case "$ARCH" in
+  amd64) CRICTL_ARCH="amd64" ;;
+  arm64) CRICTL_ARCH="arm64" ;;
+  *)
+    echo "Unsupported architecture: $ARCH"
+    exit 1
+    ;;
+esac
+
+CRICTL_VERSION="v1.35.0"
+# Install crictl
+# Install crictl (amd64/arm64 based on system)
+curl -LO "https://github.com/kubernetes-sigs/cri-tools/releases/download/${CRICTL_VERSION}/crictl-${CRICTL_VERSION}-linux-${CRICTL_ARCH}.tar.gz"
+sudo tar zxvf "crictl-${CRICTL_VERSION}-linux-${CRICTL_ARCH}.tar.gz" -C /usr/local/bin
+rm -f "crictl-${CRICTL_VERSION}-linux-${CRICTL_ARCH}.tar.gz"
+
+# Configure crictl to use containerd
+cat <<EOF | sudo tee /etc/crictl.yaml
+runtime-endpoint: unix:///run/containerd/containerd.sock
+image-endpoint: unix:///run/containerd/containerd.sock
+timeout: 10
+debug: false
+EOF
+
+echo "crictl installed and configured successfully"
 
 # Install kubelet, kubectl, and kubeadm
 curl -fsSL https://pkgs.k8s.io/core:/stable:/$KUBERNETES_VERSION/deb/Release.key |
