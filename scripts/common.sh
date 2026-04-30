@@ -5,9 +5,9 @@
 set -euxo pipefail
 
 # Kubernetes Variable Declaration
-KUBERNETES_VERSION="v1.34"
-CRICTL_VERSION="v1.34.0"
-KUBERNETES_INSTALL_VERSION="1.34.0-1.1"
+KUBERNETES_VERSION="v1.36"
+CRICTL_VERSION="v1.36.0"
+KUBERNETES_INSTALL_VERSION="1.36.0-1.1"
 
 # Disable swap
 sudo swapoff -a
@@ -81,8 +81,8 @@ case "$ARCH" in
     ;;
 esac
 
-CRICTL_VERSION="v1.35.0"
-# Install crictl
+
+
 # Install crictl (amd64/arm64 based on system)
 curl -LO "https://github.com/kubernetes-sigs/cri-tools/releases/download/${CRICTL_VERSION}/crictl-${CRICTL_VERSION}-linux-${CRICTL_ARCH}.tar.gz"
 sudo tar zxvf "crictl-${CRICTL_VERSION}-linux-${CRICTL_ARCH}.tar.gz" -C /usr/local/bin
