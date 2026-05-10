@@ -63,25 +63,25 @@ echo ""
 
 # Check Container Runtime
 echo "=== Container Runtime ==="
-if command_exists containerd; then
-    CONTAINERD_VERSION=$(containerd --version 2>/dev/null | awk '{print $3}' || echo "unknown")
-    print_status 0 "containerd: $CONTAINERD_VERSION"
+if command_exists crio; then
+    CRIO_VERSION=$(crio --version 2>/dev/null | head -n1 | awk '{print $3}' || echo "unknown")
+    print_status 0 "CRI-O: $CRIO_VERSION"
     
-    # Check containerd status
-    if systemctl is-active --quiet containerd; then
+    # Check CRI-O status
+    if systemctl is-active --quiet crio; then
         echo -e "  ${GREEN}→${NC} Status: Running"
     else
         echo -e "  ${RED}→${NC} Status: Not running"
     fi
     
-    # Check containerd socket
-    if [ -S /run/containerd/containerd.sock ]; then
-        echo -e "  ${GREEN}→${NC} Socket: /run/containerd/containerd.sock (exists)"
+    # Check CRI-O socket
+    if [ -S /run/crio/crio.sock ]; then
+        echo -e "  ${GREEN}→${NC} Socket: /run/crio/crio.sock (exists)"
     else
-        echo -e "  ${RED}→${NC} Socket: /run/containerd/containerd.sock (missing)"
+        echo -e "  ${RED}→${NC} Socket: /run/crio/crio.sock (missing)"
     fi
 else
-    print_status 1 "containerd: NOT INSTALLED"
+    print_status 1 "CRI-O: NOT INSTALLED"
 fi
 
 if command_exists runc; then
@@ -111,7 +111,7 @@ if command_exists crictl; then
     # Try to get runtime info
     echo -e "\n  Testing crictl connectivity..."
     if sudo crictl info >/dev/null 2>&1; then
-        echo -e "  ${GREEN}→${NC} crictl can communicate with containerd"
+        echo -e "  ${GREEN}→${NC} crictl can communicate with CRI-O"
         
         # Get some basic stats
         RUNNING_CONTAINERS=$(sudo crictl ps -q 2>/dev/null | wc -l)
@@ -119,7 +119,7 @@ if command_exists crictl; then
         echo -e "  ${GREEN}→${NC} Running containers: $RUNNING_CONTAINERS"
         echo -e "  ${GREEN}→${NC} Total images: $TOTAL_IMAGES"
     else
-        echo -e "  ${RED}→${NC} crictl cannot communicate with containerd"
+        echo -e "  ${RED}→${NC} crictl cannot communicate with CRI-O"
     fi
 else
     print_status 1 "crictl: NOT INSTALLED"

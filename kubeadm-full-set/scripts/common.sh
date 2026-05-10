@@ -3,6 +3,7 @@
 # Common setup for all servers (Control Plane and Nodes)
 
 set -euxo pipefail
+export DEBIAN_FRONTEND=noninteractive
 
 # Kubernetes Variable Declaration
 KUBERNETES_VERSION="v1.36"
@@ -14,7 +15,7 @@ KUBERNETES_INSTALL_VERSION="1.36.0-1.1"
 sudo swapoff -a
 
 # Keeps the swap off during reboot
-(crontab -l 2>/dev/null; echo "@reboot /sbin/swapoff -a") | crontab - || true
+(crontab -l 2>/dev/null | grep -v "/sbin/swapoff -a"; echo "@reboot /sbin/swapoff -a") | crontab - || true
 sudo apt-get update -y
 
 # Create the .conf file to load the modules at bootup
@@ -57,7 +58,7 @@ sudo apt-get install -y cri-o
 
 sudo systemctl daemon-reload
 sudo systemctl enable crio --now
-sudo systemctl start crio.service
+sudo systemctl restart crio.service
 
 echo "CRI-O runtime installed successfully"
 
@@ -73,9 +74,11 @@ case "$ARCH" in
 esac
 
 # Install crictl
-curl -LO "https://github.com/kubernetes-sigs/cri-tools/releases/download/${CRICTL_VERSION}/crictl-${CRICTL_VERSION}-linux-${CRICTL_ARCH}.tar.gz"
-sudo tar zxvf "crictl-${CRICTL_VERSION}-linux-${CRICTL_ARCH}.tar.gz" -C /usr/local/bin
-rm -f "crictl-${CRICTL_VERSION}-linux-${CRICTL_ARCH}.tar.gz"
+if ! crictl --version 2>/dev/null | grep -q "$CRICTL_VERSION"; then
+    curl -LO "https://github.com/kubernetes-sigs/cri-tools/releases/download/${CRICTL_VERSION}/crictl-${CRICTL_VERSION}-linux-${CRICTL_ARCH}.tar.gz"
+    sudo tar zxvf "crictl-${CRICTL_VERSION}-linux-${CRICTL_ARCH}.tar.gz" -C /usr/local/bin
+    rm -f "crictl-${CRICTL_VERSION}-linux-${CRICTL_ARCH}.tar.gz"
+fi
 
 # Configure crictl to use CRI-O socket
 cat <<EOF | sudo tee /etc/crictl.yaml

@@ -1,5 +1,22 @@
 # Changelog
 
+## 2026-04-30 - Update to Kubernetes v1.36
+
+### Changes Made:
+- **Kubernetes Version**: Updated from v1.34 to v1.36
+- **Container Runtime**: Switched from containerd to CRI-O v1.36
+- **crictl**: Updated from v1.34.0 to v1.36.0
+- **Network Plugin**: Updated Calico manifests to v3.32.0 for Kubernetes v1.36 compatibility
+
+### Technical Details:
+- **Kubernetes v1.36.0-1.1**
+- **crictl v1.36.0**
+- **CRI-O v1.36**
+- **Calico v3.32.0**
+- **runc v1.4.0**
+- Updated `scripts/common.sh` with new version variables and CRI-O installation.
+
+
 ## 2025-11-11 - Migration to containerd
 
 ### Changes Made:

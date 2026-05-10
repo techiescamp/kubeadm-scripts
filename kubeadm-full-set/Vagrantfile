@@ -1,0 +1,44 @@
+CONTROL_PLANE_IP = "10.0.0.10"
+NODE_COUNT = 2
+BOX = "bento/ubuntu-24.04"
+
+Vagrant.configure("2") do |config|
+  config.vm.box_check_update = true
+  config.vm.synced_folder "../manifests", "/vagrant/manifests"
+
+  # Shared provisioning: hosts file + common K8s setup
+  config.vm.provision "shell", inline: <<-SHELL
+    apt-get update -y
+    grep -q "control-plane-node" /etc/hosts || echo "#{CONTROL_PLANE_IP}  control-plane-node" >> /etc/hosts
+    grep -q "node01" /etc/hosts || echo "10.0.0.11  node01" >> /etc/hosts
+    grep -q "node02" /etc/hosts || echo "10.0.0.12  node02" >> /etc/hosts
+  SHELL
+
+  config.vm.provision "shell", path: "scripts/common.sh"
+
+  config.vm.define "control-plane" do |control_plane|
+    control_plane.vm.box = BOX
+    control_plane.vm.hostname = "control-plane-node"
+    control_plane.vm.network "private_network", ip: CONTROL_PLANE_IP
+    control_plane.vm.provider "virtualbox" do |vb|
+      vb.name = "kubeadm-control-plane"
+      vb.memory = 4096
+      vb.cpus = 2
+    end
+    control_plane.vm.provision "shell", path: "scripts/control-plane.sh"
+  end
+
+  (1..NODE_COUNT).each do |i|
+    config.vm.define "node0#{i}" do |node|
+      node.vm.box = BOX
+      node.vm.hostname = "node0#{i}"
+      node.vm.network "private_network", ip: "10.0.0.1#{i}"
+      node.vm.provider "virtualbox" do |vb|
+        vb.name = "kubeadm-node0#{i}"
+        vb.memory = 2048
+        vb.cpus = 2
+      end
+      node.vm.provision "shell", path: "scripts/node.sh"
+    end
+  end
+end

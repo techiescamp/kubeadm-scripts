@@ -2,30 +2,28 @@
 
 ## Overview
 
-These scripts automate the setup of a Kubernetes cluster using kubeadm with containerd as the container runtime.
+These scripts automate the setup of a Kubernetes cluster using kubeadm with CRI-O as the container runtime.
 
 ## Components & Versions
 
-- **Kubernetes**: v1.34
-- **Container Runtime**: containerd v2.2.0
-- **runc**: v1.3.3
-- **CNI Plugins**: v1.6.0 (optional, commented out - Calico provides its own)
-- **crictl**: v1.34.0
-- **Network Plugin**: Calico
+- **Kubernetes**: v1.36
+- **Container Runtime**: CRI-O 1.36.0
+- **crictl**: v1.36.0
+- **Network Plugin**: Calico v3.32.0
 
 ## Scripts
 
 ### common.sh
-Common setup script for all nodes (control plane and worker nodes). This script:
+Common setup script for all nodes (control plane and nodes). This script:
 - Disables swap
 - Configures kernel modules (overlay, br_netfilter)
 - Sets up networking parameters
-- Installs containerd runtime
+- Installs CRI-O runtime
 - Installs and configures crictl
 - Installs kubelet, kubeadm, and kubectl
 
-### master.sh
-Control plane (master) node setup script. This script:
+### control-plane.sh
+Control plane setup script. This script:
 - Pulls required Kubernetes images
 - Initializes the control plane using kubeadm
 - Configures kubeconfig
@@ -43,17 +41,17 @@ Verification script to check installed components and their versions after setup
 sudo bash common.sh
 
 # Initialize control plane
-sudo bash master.sh
+sudo bash control-plane.sh
 ```
 
-### 2. Setup Worker Nodes
+### 2. Setup Nodes
 
 ```bash
-# Run common setup on each worker node
+# Run common setup on each node
 sudo bash common.sh
 
-# Join the cluster using the command from master node output
-sudo kubeadm join <master-ip>:6443 --token <token> --discovery-token-ca-cert-hash sha256:<hash>
+# Join the cluster using the command from control plane output
+sudo kubeadm join <control-plane-ip>:6443 --token <token> --discovery-token-ca-cert-hash sha256:<hash>
 ```
 
 ### 3. Verify Setup
@@ -67,7 +65,7 @@ bash verify-setup.sh
 
 ### Using crictl
 
-crictl is configured to work with containerd. Common commands:
+crictl is configured to work with CRI-O. Common commands:
 
 ```bash
 # List running containers
@@ -109,10 +107,10 @@ kubectl get componentstatuses
 
 ## Troubleshooting
 
-### Check containerd status
+### Check CRI-O status
 ```bash
-sudo systemctl status containerd
-sudo journalctl -u containerd -f
+sudo systemctl status crio
+sudo journalctl -u crio -f
 ```
 
 ### Check kubelet status
@@ -121,9 +119,9 @@ sudo systemctl status kubelet
 sudo journalctl -u kubelet -f
 ```
 
-### Verify containerd configuration
+### Verify CRI-O configuration
 ```bash
-sudo cat /etc/containerd/config.toml
+sudo cat /etc/crio/crio.conf
 ```
 
 ### Verify crictl configuration
@@ -140,5 +138,5 @@ cat /etc/crictl.yaml
 
 - Swap must be disabled for Kubernetes to work properly
 - The scripts use `eth1` interface for node IP configuration (modify if your interface is different)
-- SystemdCgroup is enabled in containerd for proper cgroup management
+- CRI-O is used as the container runtime
 - All Kubernetes components are held from automatic updates using `apt-mark hold`
