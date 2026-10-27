@@ -5,16 +5,16 @@ Here is the supporting documentation and video demo.
 1. [Documentation - Kubeadm Cluster Setup Guide](https://devopscube.com/setup-kubernetes-cluster-kubeadm/)
 2. [Kubeadm workflow explanation and demo video](https://youtu.be/xX52dc3u2HU)
 
-## Kubernetes Certification Voucher (UpTo 35% OFF) 🎉
+## Kubernetes Certification Voucher (UpTo 45% OFF) 🎉
 
 If you are learning Kubernetes and preparing for Kubernetes certifications, these voucher codes will help you save money on your certification registration.
 
-CKA, CKAD, CKS, KCNA etc.. aspirants can **save 30%** today
+CKA, CKAD, CKS, KCNA etc.. aspirants can **save 35%** today
 
 > [!IMPORTANT]
-> Use code **DCUBE30** at https://kube.promo/devops. It is a limited-time offer from the Linux Foundation.
+> Use code **TREATS35CT** at https://kube.promo/devops. It is a limited-time offer from the Linux Foundation.
 
-Use code **DCUBE30** with the following bundles to **save upto 35%**
+Use code **TREATS35CT** with the following bundles to **save upto 45%**
 
 - CKA + CKAD: [kube.promo/cka-ckad](https://kube.promo/cka-ckad)
 - CKA + CKS Bundle: [kube.promo/bundle](https://kube.promo/bundle)
@@ -35,7 +35,7 @@ If you Looking for an organized way to learn Kubernetes and prepare for the CKA 
 It includes illustrations, hands-on exercises, real-world examples, and dedicated Discord support. 
 
 > [!NOTE]
->⌛ For a lmited time, use code **DCUBE30** to get 30% OFF today!
+>⌛ For a lmited time, use code **TREATS35CT** to get 35% OFF today!
 
 ## Kubernetes Learning Roadmap
 
